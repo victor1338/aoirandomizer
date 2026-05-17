@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Age of Innovation</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="backdrop"></div>
+  <main class="container">
+    <header class="hero">
+      <h1>Age of Innovation</h1>
+      <p>Static randomizer for fav/afav board and player-based setup cards.</p>
+    </header>
+
+    <section class="control-panel">
+      <div class="controls">
+        <label for="playerCount">Players (max 4)</label>
+        <select id="playerCount">
+          <option value="1">1 player</option>
+          <option value="2" selected>2 players</option>
+          <option value="3">3 players</option>
+          <option value="4">4 players</option>
+        </select>
+        <button id="randomizeButton" type="button">Randomize Setup</button>
+      </div>
+      <p id="status" class="status">Ready</p>
+    </section>
+
+    <section class="result-card">
+      <h2>fav/afav Board</h2>
+      <img id="boardImage" class="board-image" alt="Randomized fav/afav board">
+    </section>
+
+    <section class="result-card">
+      <h2>Setup Picks</h2>
+      <div id="groups" class="group-grid"></div>
+    </section>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>
