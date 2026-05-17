@@ -3,6 +3,7 @@ from __future__ import annotations
 import random
 from datetime import datetime
 from pathlib import Path
+from typing import Any
 
 from PIL import Image, ImageOps
 
@@ -68,15 +69,20 @@ def paste_cards(canvas: Image.Image, cards: list[Path], slots: list[tuple[int, i
         canvas.paste(card, (x1, y1), card)
 
 
-def main() -> None:
+def generate_fav_afav_setup(
+    *,
+    rng: random.Random | None = None,
+    base_path: Path | None = None,
+    image_root: Path | None = None,
+) -> dict[str, Any]:
     script_dir = Path(__file__).resolve().parent
-    image_root = script_dir.parent
+    image_root = image_root or script_dir.parent
+    base_path = base_path or (script_dir / "downloaded_image.jpg")
 
-    base_path = script_dir / "downloaded_image.jpg"
+    rng = rng or random.Random()
+
     afav_dir = image_root / "afav"
     fav_dir = image_root / "fav"
-
-    rng = random.Random()
 
     afav_images = list_images(afav_dir)
     fav_images = list_images(fav_dir)
@@ -86,7 +92,6 @@ def main() -> None:
 
     with Image.open(base_path) as base:
         canvas = base.convert("RGBA")
-        width, height = canvas.size
 
         # AFAV: 10 gray bulb areas (2 top pads + 8 middle bulb slots).
         raw_top_slots = [
@@ -131,9 +136,38 @@ def main() -> None:
         paste_cards(canvas, selected_afav, top_slots)
         paste_cards(canvas, selected_fav, bottom_slots)
 
+        result = {
+            "image": canvas.copy(),
+            "afav": selected_afav,
+            "fav": selected_fav,
+        }
+
+    return result
+
+
+def save_fav_afav_setup(
+    *,
+    output_dir: Path | None = None,
+    file_name: str | None = None,
+    rng: random.Random | None = None,
+) -> Path:
+    script_dir = Path(__file__).resolve().parent
+    output_dir = output_dir or script_dir
+
+    result = generate_fav_afav_setup(rng=rng)
+    board_image: Image.Image = result["image"]
+
+    if file_name is None:
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        out_file = script_dir / f"setup_randomized_{timestamp}.jpg"
-        canvas.convert("RGB").save(out_file, format="JPEG", quality=92, optimize=True)
+        file_name = f"setup_randomized_{timestamp}.jpg"
+
+    out_file = output_dir / file_name
+    board_image.convert("RGB").save(out_file, format="JPEG", quality=92, optimize=True)
+    return out_file
+
+
+def main() -> None:
+    out_file = save_fav_afav_setup(rng=random.Random())
 
     print(f"Saved randomized setup to: {out_file}")
 

@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{ title }}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+  <div class="backdrop"></div>
+  <main class="container">
+    <header class="hero">
+      <h1>Age of Innovation</h1>
+      <p>Unified setup randomizer for fav/afav board and player-dependent components.</p>
+    </header>
+
+    <section class="control-panel">
+      <form method="post" class="controls">
+        <label for="player_count">Players (max 4)</label>
+        <select id="player_count" name="player_count">
+          {% for n in [1, 2, 3, 4] %}
+          <option value="{{ n }}" {% if player_count == n %}selected{% endif %}>{{ n }} players</option>
+          {% endfor %}
+        </select>
+        <button type="submit">Randomize Setup</button>
+      </form>
+    </section>
+
+    {% if result %}
+    <section class="result-card">
+      <h2>fav/afav Board</h2>
+      <img class="board-image" src="{{ url_for('generated', file_name=result.board_file_name) }}" alt="Randomized fav and afav board">
+    </section>
+
+    <section class="result-card">
+      <h2>Player {{ result.player_count }} Setup Picks</h2>
+      <div class="group-grid">
+        {% for category, cards in result.picked.items() %}
+        <article class="group">
+          <div class="group-head">
+            <h3>{{ category }}</h3>
+            <span>{{ result.counts[category] }} cards</span>
+          </div>
+          <div class="card-grid">
+            {% for card in cards %}
+            <img
+              src="{{ url_for('asset', category=card.category, file_name=card.file_name) }}"
+              alt="{{ category }} card"
+            >
+            {% endfor %}
+          </div>
+        </article>
+        {% endfor %}
+      </div>
+    </section>
+    {% endif %}
+  </main>
+</body>
+</html>
